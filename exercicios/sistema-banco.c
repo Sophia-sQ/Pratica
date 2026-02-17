@@ -1,13 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <windows.h>
 
-void criar_conta();
-void menu();
-void mostrar_conta();
-
-int ativo = 1;
+int escolha = 0, ativo = 1, total_clientes = 0;
 
 typedef struct
 {
@@ -16,87 +11,69 @@ typedef struct
     float saldo;
 } sistema;
 
-sistema conta;
-
-int main(int argc, char const *argv[])
-{
-    system("cls");
-    while (ativo == 1)
-    {
-        menu();
-    }
-
-    /* Objetivo
-    Criar uma conta bancária básica.
-
-    Requisitos
-    struct Conta
-    número
-    titular (string)
-    saldo
-
-    Funções:
-    criarConta()
-    depositar()
-    sacar()
-    mostrarConta()
-
-    Regras
-    Não permitir saque maior que saldo.
-    Não permitir depósito negativo.*/
-    return 0;
-}
+sistema conta[100];
 
 void criar_conta()
 {
     srand(time(NULL));
 
     printf("Nome do titular da conta: ");
+
+    scanf("%s", conta[total_clientes].titular);
     fflush(stdin);
-    scanf("%s", conta.titular);
-    conta.numero = rand() % 10000;
-    printf("O numero dessa conta e: %04d\n\n*Aperte qualquer tecla para ir para a proxima guia. . .", conta.numero);
+    conta[total_clientes].numero = rand() % 10000;
+    printf("O numero dessa conta e: %04d\n\n*Aperte qualquer tecla para ir para a proxima guia. . .", conta[total_clientes].numero);
     getchar();
+    total_clientes++;
     menu();
 }
 
 void menu()
 {
+    printf("\033[H\033[J");
     printf("Bem-vindo!\n\n");
     printf("(1) Ja sou cliente\n(2) Criar uma conta\n(3) Sou um colaborador\n(4) Sair\n\n");
-    int escolha = 0;
-    fflush(stdin);
-    scanf("%d", &escolha);
-    int num_conta = 0;
 
+    scanf("%d", &escolha);
+    fflush(stdin);
+    int num_conta = 0, senha = 0, indice=0;
     switch (escolha)
     {
     case 1:
-        
+        printf("\033[H\033[J");
         printf("Digite o numero de 4 digitos referente a sua conta: ");
-        fflush(stdin);
+
         scanf("%d", &num_conta);
-        if (num_conta == conta.numero)
+        fflush(stdin);
+        indice=buscar_conta(num_conta);
+
+        if (num_conta == conta[indice].numero)
         {
-            system("cls");
-            mostrar_conta();
-            //DESENVOLVIMENTO
+            printf("\033[H\033[J");
+            mostrar_conta(indice);
         }
+
         break;
     case 2:
-        system("cls");
+        printf("\033[H\033[J");
         criar_conta();
         break;
 
     case 3:
-        system("cls");
-        printf("Digite sua senha: \n\nAREA EM DESENVOLVIMENTO");
+        printf("\033[H\033[J");
+        printf("Digite sua senha: \n\n");
+        scanf("%d", &senha);
+        fflush(stdin);
+        if (senha == 2704)
+        {
+            //buscar_conta();
+        }
         break;
 
     case 4:
-        system("cls");
+        printf("\033[H\033[J");
         printf("F E C H A N D O .   .   .");
-        ativo=0;
+        ativo = 0;
         break;
 
     default:
@@ -104,10 +81,90 @@ void menu()
     }
 }
 
-void mostrar_conta()
+int buscar_conta(int num_conta)
 {
-    printf("Olá, %s\n\n", conta.titular);
-    printf("Numero da conta: %d\nSaldo atual: %.2f\n\n", conta.numero, conta.saldo);
+    for (int i = 0; i <= total_clientes; i++)
+    {
+        if (num_conta == conta[i].numero)
+        {
+            return i;
+        }
+    }
+}
 
-    //DESENVOLVIMENTO
+void mostrar_conta(int indice)
+{
+    printf("\033[H\033[J");
+    printf("Ola, %s.\n\n", conta[indice].titular);
+    printf("Numero da conta: %d\nSaldo atual: %.2f\n\n", conta[indice].numero, conta[indice].saldo);
+    printf("(1) Fazer um deposito\n(2) Sacar um valor\n(3) Retornar ao inicio\n\n");
+    scanf("%d", &escolha);
+    fflush(stdin);
+    switch (escolha)
+    {
+    case 1:
+        printf("\033[H\033[J");
+        depositar(indice);
+        break;
+
+    case 2:
+        printf("\033[H\033[J");
+        sacar(indice);
+        break;
+
+    case 3:
+        printf("\033[H\033[J");
+        menu();
+        break;
+
+    default:
+        break;
+    }
+}
+
+void depositar(int indice)
+{
+    float deposito = 0;
+    printf("\nDigite o valor a ser depositado: ");
+    scanf("%f", &deposito);
+    fflush(stdin);
+    if (deposito < 0)
+    {
+        printf("Impossivel efetuar transacao.\n\n*Aperte qualquer botao para ir para a proxima guia");
+        getchar();
+    }
+    else
+    {
+        conta[indice].saldo += deposito;
+    }
+    mostrar_conta(indice);
+}
+
+void sacar(int indice)
+{
+    float saque = 0;
+    printf("\nDigite o valor a ser sacado: ");
+    scanf("%f", &saque);
+    fflush(stdin);
+    if (saque > conta[indice].saldo)
+    {
+        printf("Impossivel efetuar transacao.\n\n*Aperte qualquer botao para ir para a proxima guia");
+        getchar();
+    }
+    else
+    {
+        conta[indice].saldo -= saque;
+    }
+    mostrar_conta(indice);
+}
+
+int main(int argc, char const *argv[])
+{
+    printf("\033[H\033[J");
+    while (ativo == 1)
+    {
+        menu();
+    }
+
+    return 0;
 }
