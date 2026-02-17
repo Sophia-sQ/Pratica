@@ -36,7 +36,7 @@ void menu()
 
     scanf("%d", &escolha);
     fflush(stdin);
-    int num_conta = 0, senha = 0, indice=0;
+    int num_conta = 0, senha = 0, indice = 0;
     switch (escolha)
     {
     case 1:
@@ -45,8 +45,8 @@ void menu()
 
         scanf("%d", &num_conta);
         fflush(stdin);
-        indice=buscar_conta(num_conta);
-        if (indice==-1)
+        indice = buscar_conta(num_conta);
+        if (indice == -1)
         {
             printf("\nConta nao encontrada\n*aperte qualquer tecla para ir para a proxima guia");
             getchar();
@@ -71,7 +71,7 @@ void menu()
         fflush(stdin);
         if (senha == 2704)
         {
-            //buscar_conta();
+            // buscar_conta();
         }
         break;
 
@@ -103,10 +103,13 @@ int buscar_conta(int num_conta)
 
 void mostrar_conta(int indice)
 {
+    int cliente = 0;
+    float valor = 0;
+
     printf("\033[H\033[J");
     printf("Ola, %s.\n\n", conta[indice].titular);
     printf("Numero da conta: %d\nSaldo atual: %.2f\n\n", conta[indice].numero, conta[indice].saldo);
-    printf("(1) Fazer um deposito\n(2) Sacar um valor\n(3) Retornar ao inicio\n\n");
+    printf("(1) Fazer um deposito\n(2) Sacar um valor\n(3) Realizar uma transferencia\n(4) Retornar ao inicio\n\n");
     scanf("%d", &escolha);
     fflush(stdin);
     switch (escolha)
@@ -123,11 +126,53 @@ void mostrar_conta(int indice)
 
     case 3:
         printf("\033[H\033[J");
+        printf("Digite o numero da conta do destinatario: ");
+        scanf("%d", &cliente);
+        fflush(stdin);
+        printf("Digite o valor da transferencia: ");
+        scanf("%d", &valor);
+        fflush(stdin);
+        if (valor > conta[indice].saldo || valor < 0)
+        {
+            printf("Impossivel efetuar a transferencia.\n\n*Aperte qualquer botao para ir para a proxima guia");
+            getchar();
+            mostrar_conta(indice);
+        }
+        else
+        {
+            transferencia(indice, cliente, valor);
+        }
+        break;
+
+    case 4:
+        printf("\033[H\033[J");
         menu();
         break;
 
     default:
         break;
+    }
+}
+
+void transferencia(int origem, int conta_destino, float valor)
+{
+    int destinatario = 0;
+    printf("\033[H\033[J");
+    destinatario = buscar_conta(conta_destino);
+    if (destinatario == -1)
+    {
+        printf("\nConta nao encontrada\n*aperte qualquer tecla para ir para a proxima guia");
+        getchar();
+        printf("\033[H\033[J");
+        mostrar_conta(origem);
+    }
+    else if (conta_destino == conta[destinatario].numero)
+    {
+        conta[origem].saldo -= valor;
+        conta[destinatario].saldo += valor;
+        printf("Tranferencia realizada\n*aperte qualquer tecla para ir para a proxima guia");
+        getchar();
+        mostrar_conta(origem);
     }
 }
 
@@ -155,7 +200,7 @@ void sacar(int indice)
     printf("\nDigite o valor a ser sacado: ");
     scanf("%f", &saque);
     fflush(stdin);
-    if (saque > conta[indice].saldo)
+    if (saque > conta[indice].saldo || saque < 0)
     {
         printf("Impossivel efetuar transacao.\n\n*Aperte qualquer botao para ir para a proxima guia");
         getchar();
