@@ -46,8 +46,13 @@ void menu()
         scanf("%d", &num_conta);
         fflush(stdin);
         indice=buscar_conta(num_conta);
-
-        if (num_conta == conta[indice].numero)
+        if (indice==-1)
+        {
+            printf("\nConta nao encontrada\n*aperte qualquer tecla para ir para a proxima guia");
+            getchar();
+            printf("\033[H\033[J");
+        }
+        else if (num_conta == conta[indice].numero)
         {
             printf("\033[H\033[J");
             mostrar_conta(indice);
@@ -77,6 +82,9 @@ void menu()
         break;
 
     default:
+        printf("\nValor invalido\n*aperte qualquer tecla para ir para a proxima guia");
+        getchar();
+        printf("\033[H\033[J");
         break;
     }
 }
@@ -90,6 +98,7 @@ int buscar_conta(int num_conta)
             return i;
         }
     }
+    return -1;
 }
 
 void mostrar_conta(int indice)
