@@ -3,8 +3,7 @@
 #include <time.h>
 #include <string.h>
 
-// valor na transferencia é sempre 0. verificar
-
+FILE *bd;
 int escolha = 0, ativo = 1, total_clientes = 0;
 
 typedef struct
@@ -220,7 +219,8 @@ void sacar(int indice)
 
 int main(int argc, char const *argv[])
 {
-    strcpy(conta[0].titular, "teste1");
+    bd=fopen("clientes.txt", "w");
+    /*strcpy(conta[0].titular, "teste1");
     conta[0].numero = 1111;
     conta[0].saldo = 100;
     total_clientes++;
@@ -228,7 +228,7 @@ int main(int argc, char const *argv[])
     strcpy(conta[1].titular, "teste2");
     conta[1].numero = 2222;
     conta[1].saldo = 0;
-    total_clientes++;
+    total_clientes++;*/
 
     printf("\033[H\033[J");
     while (ativo == 1)
